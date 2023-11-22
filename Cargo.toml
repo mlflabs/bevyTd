@@ -1,0 +1,41 @@
+[package]
+name = "td3"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+
+[workspace]
+resolver = "2"
+
+#### --------------------Dev/ debug-------------------------------
+# Enable high optimizations for dependencies (incl. Bevy), but not for our code:
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev.package.bevy]
+features = ["dynamic"]
+
+#### --------------------Production/ release-------------------------------
+[profile.release]
+strip = "debuginfo"
+lto = "thin"
+
+[dependencies]
+bevy = { version = "0.12.0", features = ["dynamic_linking"] }
+bevy_asset_loader = { version = "0.18", features = ["standard_dynamic_assets" ]} 
+bevy_editor_pls = { version = "0.6" }
+bevy_gltf_blueprints = "0.3.0"
+bevy_gltf_components = "0.2.0"
+bevy_xpbd_3d = "0.3.2"
+rand = "0.8.5"
+smooth-bevy-cameras = "0.10.0"
+
+
+
+# cargo install cargo-watch
+# cargo watch -cx "run --release --target wasm32-unknown-unknown"
+# cargo watch -cx "run --release"
+# cargo watch -cx "run "
