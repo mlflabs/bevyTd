@@ -1,6 +1,3 @@
-pub mod camera;
-pub use camera::*;
-
 pub mod lighting;
 pub use lighting::*;
 
@@ -18,7 +15,7 @@ impl Plugin for CorePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             LightingPlugin,
-            CameraPlugin,
+            //CameraPlugin,
             PhysicsPlugin,
             BlueprintsPlugin {
                 library_folder: "models/library".into(),

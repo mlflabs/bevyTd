@@ -1,5 +1,13 @@
 pub mod in_game;
-use bevy_xpbd_3d::prelude::{Collision, CollisionEnded, CollisionStarted};
+use bevy_xpbd_3d::prelude::{
+    Collision, CollisionEnded, CollisionStarted};
+
+use bevy_xpbd_3d::{
+    math::*, prelude::*, PhysicsSchedule, PhysicsStepSet, SubstepSchedule, SubstepSet,
+};
+
+use smooth_bevy_cameras::LookTransformPlugin;
+
 pub use in_game::*;
 
 pub mod in_main_menu;
@@ -13,6 +21,16 @@ use crate::{
     state::{AppState, GameState},
 };
 use bevy::prelude::*;
+
+
+pub mod controller_player;
+pub use controller_player::*;
+
+pub mod controller_character;
+pub use controller_character::*;
+
+pub mod controller_camera;
+pub use controller_camera::*;
 
 // this file is just for demo purposes, contains various types of components, systems etc
 
@@ -28,10 +46,7 @@ pub enum SoundMaterial {
     None,
 }
 
-#[derive(Component, Reflect, Default, Debug)]
-#[reflect(Component)]
-/// Demo marker component
-pub struct Player;
+
 
 #[derive(Component, Reflect, Default, Debug)]
 #[reflect(Component)]
@@ -79,25 +94,43 @@ pub fn test_collision_events(
     }
 }
 
+
+
+
 pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(PickingPlugin)
+        app.add_plugins((
+                PickingPlugin, 
+                CharacterControllerPlugin, 
+                LookTransformPlugin))
             .register_type::<Interactible>()
             .register_type::<SoundMaterial>()
             .register_type::<Player>()
             // little helper utility, to automatically inject components that are dependant on an other component
             // ie, here an Entity with a Player component should also always have a ShouldBeWithPlayer component
             // you get a warning if you use this, as I consider this to be stop-gap solution (usually you should have either a bundle, or directly define all needed components)
+            
+            
+            //.add_systems(PhysicsSchedule, character_movement.before(PhysicsStepSet::BroadPhase))
+            // .add_systems(
+            //     // Run collision handling in substep schedule
+            //     SubstepSchedule,
+            //     kinematic_collision.in_set(SubstepSet::SolveUserConstraints),
+            // )
+            .add_systems(Startup, camera_setup)
             .add_systems(
                 Update,
                 (
                     // insert_dependant_component::<Player, ShouldBeWithPlayer>,
-                    player_move_demo, //.run_if(in_state(AppState::Running)),
+                    //player_move_demo, //.run_if(in_state(AppState::Running)),
+                    setup_player_controller,
+                    move_camera_system,
+                    //camera_setup, 
                     test_collision_events,
                     spawn_test,
                 )
-                    .run_if(in_state(GameState::InGame)),
+                    .run_if(in_state(GameState::InGame)), 
             )
             .add_systems(OnEnter(AppState::MenuRunning), setup_main_menu)
             .add_systems(OnExit(AppState::MenuRunning), teardown_main_menu)
