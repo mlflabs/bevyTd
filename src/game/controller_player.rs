@@ -21,7 +21,7 @@ pub fn setup_player_controller(
     for (entity, mut transform) in q_player.iter_mut(){
         commands.entity(entity)
             .insert(CharacterControllerBundle::new(
-                Collider::capsule(1.0, 0.4), 
+                Collider::capsule(0.1, 0.4), 
                 Vector::NEG_Y * 9.81 * 2.0)
                 .with_movement(
                     30.0, 
@@ -47,16 +47,16 @@ pub fn setup_player_controller2(
 ) {
     for (entity, mut transform) in q_player.iter_mut(){
         commands.entity(entity)
-            .insert(RigidBody::Kinematic,)
-            .insert(Collider::capsule(1.0, 0.4))
-            .insert(ShapeCaster::new(
-                Collider::capsule(0.9, 0.35),
-                Vector::ZERO,
-                Quaternion::default(),
-                Vector::NEG_Y,
-            )
-            .with_max_time_of_impact(0.11)
-            .with_max_hits(1));
+            .insert(RigidBody::Kinematic,);
+            //.insert(Collider::capsule(1.0, 0.4))
+            // .insert(ShapeCaster::new(
+            //     Collider::capsule(0.9, 0.35),
+            //     Vector::ZERO,
+            //     Quaternion::default(),
+            //     Vector::NEG_Y,
+            // )
+            //.with_max_time_of_impact(0.11)
+            //.with_max_hits(1));
 
         transform.translation = Vec3::new(2.,2.,2.);
     }

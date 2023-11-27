@@ -1,4 +1,6 @@
 pub mod in_game;
+use bevy::core_pipeline::bloom::BloomSettings;
+use bevy::core_pipeline::experimental::taa::TemporalAntiAliasBundle;
 use bevy_xpbd_3d::prelude::{
     Collision, CollisionEnded, CollisionStarted};
 
@@ -23,11 +25,15 @@ use crate::{
 use bevy::prelude::*;
 
 
-pub mod controller_player;
-pub use controller_player::*;
+// pub mod controller_player;
+// pub use controller_player::*;
 
-pub mod controller_character;
-pub use controller_character::*;
+
+pub mod plugin_player;
+pub use plugin_player::*;
+
+// pub mod controller_character;
+// pub use controller_character::*;
 
 pub mod controller_camera;
 pub use controller_camera::*;
@@ -58,27 +64,7 @@ pub struct ShouldBeWithPlayer;
 /// Demo marker component
 pub struct Interactible;
 
-fn player_move_demo(
-    keycode: Res<Input<KeyCode>>,
-    mut players: Query<&mut Transform, With<Player>>,
-) {
-    let speed = 0.2;
-    if let Ok(mut player) = players.get_single_mut() {
-        if keycode.pressed(KeyCode::Left) {
-            player.translation.x += speed;
-        }
-        if keycode.pressed(KeyCode::Right) {
-            player.translation.x -= speed;
-        }
 
-        if keycode.pressed(KeyCode::Up) {
-            player.translation.z += speed;
-        }
-        if keycode.pressed(KeyCode::Down) {
-            player.translation.z -= speed;
-        }
-    }
-}
 
 // collision tests/debug
 pub fn test_collision_events(
@@ -102,8 +88,10 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
                 PickingPlugin, 
-                CharacterControllerPlugin, 
-                LookTransformPlugin))
+                PlayerPlugin,
+                //CharacterControllerPlugin, 
+                LookTransformPlugin
+            ))
             .register_type::<Interactible>()
             .register_type::<SoundMaterial>()
             .register_type::<Player>()
@@ -119,12 +107,13 @@ impl Plugin for GamePlugin {
             //     kinematic_collision.in_set(SubstepSet::SolveUserConstraints),
             // )
             .add_systems(Startup, camera_setup)
+            //.add_systems(Startup, setup)
             .add_systems(
                 Update,
                 (
                     // insert_dependant_component::<Player, ShouldBeWithPlayer>,
                     //player_move_demo, //.run_if(in_state(AppState::Running)),
-                    setup_player_controller,
+                    // setup_player_controller,
                     move_camera_system,
                     //camera_setup, 
                     test_collision_events,
@@ -137,4 +126,31 @@ impl Plugin for GamePlugin {
             .add_systems(Update, (main_menu))
             .add_systems(OnEnter(AppState::AppRunning), setup_game);
     }
+}
+ 
+
+
+fn setup(mut commands: Commands) {
+    commands
+        .spawn(Camera3dBundle {
+            transform: Transform::from_translation(Vec3::new(0.0, 4.0, 12.0))
+                .looking_at(Vec3::ZERO, Vec3::Y),
+            camera: Camera {
+                hdr: true,
+                ..default()
+            },
+            ..default()
+        })
+        .insert(BloomSettings {
+            intensity: 0.1,
+            ..default()
+        })
+        .insert(TemporalAntiAliasBundle::default())
+        .insert(Name::new("MainCamera"))
+        .insert(PlayerFollowingCamera);
+
+    // commands.insert_resource(AmbientLight {
+    //     color: Color::WHITE,
+    //     brightness: 0.2,
+    // });
 }
