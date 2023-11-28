@@ -34,31 +34,6 @@ pub fn camera_setup(mut commands: Commands) {
 
 
 
-pub fn camera_setup2(
-    mut q_camera: Query<Entity, Added<Camera3d>>,
-    mut commands: Commands) {
-
-
-
-
-
-
-    for entity in q_camera.iter_mut(){
-        commands.entity(entity)
-            .insert(MainCamera)
-            .insert(LookTransformBundle {
-                transform: LookTransform {
-                    eye: Vec3::new(-2.0, 2.5, 5.0),
-                    target: Vec3::new(0.0, 0.5, 0.0),
-                    up: Vec3::Y,
-                },
-                smoother: Smoother::new(0.5),
-            });
-    }
-}
-
-
-
 pub fn move_camera_system(
     mut q_camera: Query<&mut LookTransform>,
     q_player: Query<&Transform, With<Player>>) 
@@ -66,8 +41,8 @@ pub fn move_camera_system(
 
     if let Ok(pp) = q_player.get_single() {
         if let Ok(mut cc) = q_camera.get_single_mut(){
-            cc.target = pp.translation;
-            cc.eye = pp.translation + Vec3::new(0.0, 10.0, 16.0)
+            cc.target = pp.translation+ Vec3::new(0.0, 5.0, 2.0);
+            cc.eye = pp.translation + Vec3::new(0.0, 8.0, 16.0)
             
         }
         
