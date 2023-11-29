@@ -27,7 +27,7 @@ lto = "thin"
 bevy = { version = "0.12.0", features = ["dynamic_linking"] }
 bevy_asset_loader = { version = "0.18", features = ["standard_dynamic_assets" ]} 
 bevy_editor_pls = { version = "0.6" }
-bevy_gltf_blueprints = "0.3.0"
+bevy_gltf_blueprints = "0.3.3"
 bevy_gltf_components = "0.2.0"
 bevy_xpbd_3d = "0.3.2"
 rand = "0.8.5"

@@ -351,7 +351,7 @@ fn player_movement_walk(
 
 fn player_animation(
     mut player: Query<(&AnimationPlayerLink, &Animations, &TnuaController, &CurrentState), 
-        (With<Player>)>,
+        (With<Player>, Changed<CurrentState>)>,
     mut animation_players: Query<&mut AnimationPlayer>,
 ) {
     for (link, animations, controller, state) in player.iter_mut() {
@@ -362,21 +362,47 @@ fn player_animation(
             anim_name = "Jump";
         }
         else if state.state == PlayerStates::Move{
-            anim_name = "Move";
+            anim_name = "Walk";
         }
+        
+        println!("********************************************Changing animation: {:?}", anim_name);
+        // for key in animations.named_animations.keys() {
+        //     println!("Animation: {}", key);
+        // }
+        
+        let duration = if anim_name == "Jump" {
+            Duration::from_secs(0)
+         } else {
+            Duration::from_secs_f32(0.2)
+        };
 
-        println!("Chaning animation: {:?}", anim_name);
         let mut animation_player = animation_players.get_mut(link.0).unwrap();
-        animation_player
-            .play_with_transition(
-                animations
-                    .named_animations
-                    .get(anim_name)
-                    .expect("animation name should be in the list")
-                    .clone(),
-                Duration::from_secs(3),
-            )
-            .repeat();
+            animation_player
+                .play_with_transition(
+                    animations
+                        .named_animations
+                        .get(anim_name)
+                        .expect("*********animation name should be in the list")
+                        .clone(),
+                    duration,
+                );
+            
+            if  anim_name != "Jump" {
+                animation_player.repeat();
+                
+            }
+            
+            
+            // animation_player
+            //     .play_with_transition(
+            //         animations
+            //             .named_animations
+            //             .get(anim_name)
+            //             .expect("*********animation name should be in the list")
+            //             .clone(),
+            //         Duration::from_secs(3),
+            //     )
+            //     .repeat();
         
     }
 }

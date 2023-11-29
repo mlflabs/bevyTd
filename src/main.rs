@@ -23,8 +23,8 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         // resolution: (800., 460.).into(), //2850, 0
-                        position: WindowPosition::At((5,5).into()),
-                        resolution: (1000., 600.).into(), //2850, 0
+                        position: WindowPosition::At((3850,1040).into()),
+                        resolution: (1200., 600.).into(), //2850, 0
                         // position: WindowPosition::At((2550,0).into()),
     
                         //resolution: (1280., 720.).into(),

@@ -1,6 +1,9 @@
 pub mod in_game;
+use std::time::Duration;
+
 use bevy::core_pipeline::bloom::BloomSettings;
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasBundle;
+use bevy_gltf_blueprints::{AnimationPlayerLink, Animations};
 use bevy_xpbd_3d::prelude::{
     Collision, CollisionEnded, CollisionStarted};
 
@@ -82,6 +85,15 @@ pub fn test_collision_events(
 }
 
 
+#[derive(Component, Reflect, Default, Debug)]
+#[reflect(Component)]
+/// Demo marker component
+pub struct Fox;
+
+#[derive(Component, Reflect, Default, Debug)]
+#[reflect(Component)]
+/// Demo marker component
+pub struct Robot;
 
 
 pub struct GamePlugin;
@@ -96,7 +108,8 @@ impl Plugin for GamePlugin {
             .register_type::<Interactible>()
             .register_type::<SoundMaterial>()
             .register_type::<Player>()
-            
+            .register_type::<Robot>()
+            .register_type::<Fox>()
             // little helper utility, to automatically inject components that are dependant on an other component
             // ie, here an Entity with a Player component should also always have a ShouldBeWithPlayer component
             // you get a warning if you use this, as I consider this to be stop-gap solution (usually you should have either a bundle, or directly define all needed components)
@@ -108,7 +121,7 @@ impl Plugin for GamePlugin {
             //     SubstepSchedule,
             //     kinematic_collision.in_set(SubstepSet::SolveUserConstraints),
             // )
-            .add_systems(Startup, camera_setup)
+            .add_systems(Startup, (camera_setup, ))
             //.add_systems(Startup, setup)
             .add_systems(
                 Update,
@@ -116,6 +129,10 @@ impl Plugin for GamePlugin {
                     // insert_dependant_component::<Player, ShouldBeWithPlayer>,
                     //player_move_demo, //.run_if(in_state(AppState::Running)),
                     // setup_player_controller,
+                    
+                    fox_test,
+
+
                     move_camera_system,
                     //camera_setup, 
                     test_collision_events,
@@ -156,3 +173,45 @@ fn setup(mut commands: Commands) {
     //     brightness: 0.2,
     // });
 }
+
+
+pub fn fox_test(
+    animated_foxes: Query<(&AnimationPlayerLink, &Animations), With<Fox>>,
+    mut animation_players: Query<&mut AnimationPlayer>,
+    keycode: Res<Input<KeyCode>>,
+    // mut entities_with_animations : Query<(&mut AnimationPlayer, &mut Animations)>,
+) {
+    // robots
+    if keycode.just_pressed(KeyCode::B) {
+        println!("HIT BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+        for (link, animations) in animated_foxes.iter() {
+            println!("------------------Hello Fox Animation");
+            let mut animation_player = animation_players.get_mut(link.0).unwrap();
+            let anim_name = "Survey";
+
+            for key in animations.named_animations.keys() {
+                println!("Animation: {}", key);
+            }
+
+                
+            animation_player
+                .play_with_transition(
+                    animations
+                        .named_animations
+                        .get(anim_name)
+                        .expect("animation name should be in the list")
+                        .clone(),
+                    Duration::from_secs(0),
+                )
+                .repeat();
+        }
+    
+    }
+}
+
+
+
+
+
+
+

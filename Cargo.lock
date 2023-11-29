@@ -819,9 +819,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_gltf_blueprints"
-version = "0.3.0"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93f94e45dd4986815de859c8b4140a9b03f555d4911ae7cf041a4e3e216529db"
+checksum = "22d1daf4ecbd24a53d3bccf0e80d65d722761e77640fdd1d41777164282cf280"
 dependencies = [
  "bevy",
  "bevy_gltf_components",
